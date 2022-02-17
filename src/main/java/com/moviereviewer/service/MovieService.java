@@ -44,15 +44,15 @@ public class MovieService {
     public List<MovieDto> findAll() {
         final List<Movie> movies = movieRepository.findAll();
 
-        final Map<Movie, List<String>> groupedByCategories = categoryRepository.findAllByMovies(movies)
+        final Map<Movie, List<String>> categoriesByMovie = categoryRepository.findAllByMovies(movies)
             .stream()
             .collect(groupingBy(Category::getMovie, mapping(category -> category.getGenre().getName(), toList())));
 
-        final Map<Movie, Double> groupedByRating = rateRepository.findAllByMovies(movies)
+        final Map<Movie, Double> ratingByMovie = rateRepository.findAllByMovies(movies)
             .stream()
             .collect(groupingBy(Rate::getMovie, averagingDouble(Rate::getVote)));
 
-        Map<Movie, List<ReviewDto>> groupedByReviews = reviewRepository.findAllByMovies(movies)
+        final Map<Movie, List<ReviewDto>> reviewsByMovie = reviewRepository.findAllByMovies(movies)
             .stream()
             .collect(groupingBy(Review::getMovie,
                 mapping(review -> new ReviewDto()
@@ -65,20 +65,20 @@ public class MovieService {
                 .setName(movie.getName())
                 .setDirector(movie.getDirector())
                 .setDescription(movie.getDescription())
-                .setCategories(groupedByCategories.get(movie))
-                .setRating(groupedByRating.get(movie))
-                .setReviews(groupedByReviews.get(movie))
+                .setCategories(categoriesByMovie.get(movie))
+                .setRating(ratingByMovie.get(movie))
+                .setReviews(reviewsByMovie.get(movie))
             )
             .collect(toList());
     }
 
     public void save(MovieDto movieDto) {
-        List<Genre> genres = movieDto.getCategories()
+        final List<Genre> genres = movieDto.getCategories()
             .stream()
             .map(Genre::from)
             .collect(toList());
 
-        List<Category> categories = categoryRepository.findAllByGenres(genres);
+        final List<Category> categories = categoryRepository.findAllByGenres(genres);
 
         Movie movie = new Movie()
             .setName(movieDto.getName())
