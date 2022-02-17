@@ -1,7 +1,6 @@
 package com.moviereviewer.controller;
 
 import com.moviereviewer.dto.MovieDto;
-import com.moviereviewer.model.Movie;
 import com.moviereviewer.service.MovieService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,13 +1,16 @@
 package com.moviereviewer.service;
 
 import com.moviereviewer.dto.MovieDto;
+import com.moviereviewer.dto.ReviewDto;
 import com.moviereviewer.enums.Genre;
 import com.moviereviewer.model.Category;
 import com.moviereviewer.model.Movie;
 import com.moviereviewer.model.Rate;
+import com.moviereviewer.model.Review;
 import com.moviereviewer.repository.CategoryRepository;
 import com.moviereviewer.repository.MovieRepository;
 import com.moviereviewer.repository.RateRepository;
+import com.moviereviewer.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,15 +27,18 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final CategoryRepository categoryRepository;
     private final RateRepository rateRepository;
+    private final ReviewRepository reviewRepository;
 
     public MovieService(
         final MovieRepository movieRepository,
         final CategoryRepository categoryRepository,
-        final RateRepository rateRepository
+        final RateRepository rateRepository,
+        final ReviewRepository reviewRepository
     ) {
         this.movieRepository = movieRepository;
         this.categoryRepository = categoryRepository;
         this.rateRepository = rateRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     public List<MovieDto> findAll() {
@@ -46,6 +52,14 @@ public class MovieService {
             .stream()
             .collect(groupingBy(Rate::getMovie, averagingDouble(Rate::getVote)));
 
+        Map<Movie, List<ReviewDto>> groupedByReviews = reviewRepository.findAllByMovies(movies)
+            .stream()
+            .collect(groupingBy(Review::getMovie,
+                mapping(review -> new ReviewDto()
+                    .setFullname(review.getUser().getFirstName() + " " + review.getUser().getLastName())
+                    .setMessage(review.getMessage())
+                    .setLiked(review.isLiked()), toList())));
+
         return movies.stream()
             .map(movie -> new MovieDto()
                 .setName(movie.getName())
@@ -53,6 +67,7 @@ public class MovieService {
                 .setDescription(movie.getDescription())
                 .setCategories(groupedByCategories.get(movie))
                 .setRating(groupedByRating.get(movie))
+                .setReviews(groupedByReviews.get(movie))
             )
             .collect(toList());
     }

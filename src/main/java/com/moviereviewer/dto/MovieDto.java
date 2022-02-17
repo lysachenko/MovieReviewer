@@ -18,4 +18,6 @@ public class MovieDto {
     private List<String> categories;
 
     private Double rating;
+
+    private List<ReviewDto> reviews;
 }
