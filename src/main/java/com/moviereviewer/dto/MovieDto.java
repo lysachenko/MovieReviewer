@@ -20,4 +20,11 @@ public class MovieDto {
     private Double rating;
 
     private List<ReviewDto> reviews;
+
+    public Double getRating() {
+        if (rating != null) {
+            return Math.round(rating * 100.0) / 100.0;
+        }
+        return null;
+    }
 }

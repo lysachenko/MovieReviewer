@@ -12,4 +12,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("select r from Review r where r.movie in (:movies)")
     List<Review> findAllByMovies(@Param("movies") List<Movie> movies);
+
+    List<Review> findReviewByMovie(Movie movie);
 }

@@ -12,4 +12,6 @@ public interface RateRepository extends JpaRepository<Rate, Long> {
 
     @Query("select r from Rate r where r.movie in (:movies)")
     List<Rate> findAllByMovies(@Param("movies") List<Movie> movies);
+
+    List<Rate> findRateByMovie(Movie movie);
 }

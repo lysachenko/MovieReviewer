@@ -16,4 +16,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("select c from Category c where c.movie in (:movies)")
     List<Category> findAllByMovies(@Param("movies") List<Movie> movies);
+
+    List<Category> findCategoryByMovie(Movie movie);
 }
